@@ -1,0 +1,52 @@
+Kyle Willett
+17 Dec 2014
+
+"Clumpy" galaxies in Stripe 82 from GZ: Hubble morphologies
+working with Claudia Scarlata, Steven Vanderhei, Ali Swancutt (UMN)
+
+"clumpy" = f_features,weighted >= 0.50 AND f_clumpy,weighted >= 0.50 AND N_clumpy,weighted >= 20
+
+The above definition is my off-the-cuff threshold; not empirically determined, but intended to get a relatively
+    clean sample of the clumpiest galaxies. 
+
+
+single-epoch Stripe 82 data: 144 clumpy galaxies
+coadded Stripe 82 data:      145 clumpy galaxies
+
+    Matching the two samples against each other by position (3 arcsec), 
+    only 34 galaxies are defined as clumpy in both single-epoch and coadded imaging.
+
+110 galaxies are clumpy in single-epoch but not coadded images
+
+      5 have no image in the coadded data
+    105 have a coadded image, but it does not meet the criteria for "clumpy"
+
+111 galaxies are clumpy in coadded but not single-epoch images
+
+     48 have no image in the single-epoch data
+     63 have a single-epoch image, but it does not meet the criteria for "clumpy"
+
+
+For the 105 galaxies that are clumpy in single-epoch but not coadded:
+
+    mean f_features,weighted = 0.480        (75% do not meet the criteria of >= 0.50)
+    mean f_clumpy,weighted   = 0.659        (30% do not meet the criteria of >= 0.50)
+    mean N_clumpy,weighted   = 12.4         (95% do not meet the criteria of >= 20)
+
+    All but 4 galaxies have N_clumpy,weighted <= 20; 
+    those 4 all have f_features,weighted between 0.45 and 0.50
+
+    If threshold on N_clumpy,weighted is lowered to 10: 20 additional galaxies meet 50%,50% criteria for clumpy
+    If threshold on N_clumpy,weighted is lowered to  0: same result as for N >= 10
+
+For the 63 galaxies that are clumpy in coadded but not single-epoch:
+
+    mean f_features,weighted = 0.427        ( 80% do not meet the criteria of >= 0.50)
+    mean f_clumpy,weighted   = 0.690        ( 30% do not meet the criteria of >= 0.50)
+    mean N_clumpy,weighted   = 12.2         (100% do not meet the criteria of >= 20)
+
+    All galaxies have N_clumpy,weighted <= 20
+
+    If threshold on N_clumpy,weighted is lowered to 10: 14 additional galaxies meet 50%,50% criteria for clumpy
+    If threshold on N_clumpy,weighted is lowered to  0: same result as for N >= 10
+
