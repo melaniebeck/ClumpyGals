@@ -1,4 +1,6 @@
 from astropy.table import Table, join
+from astropy.coordinates import SkyCoord
+from astropy import units as u
 import numpy as np
 import matplotlib.pyplot as plt
 import pdb
@@ -11,14 +13,37 @@ clumpy_kw = Table.read('../data/clumpy_stripe82_coadd.fits')
 # Import the SDSS portion of the file Mel gave me of ALL 
 # clumpy gals with f_clump > 0.5 for GZH
 #clumpy_all = Table.read('../data/gzh_sdss.fits')
-strictclumpy = Table.read('../data/gzh_sdss_strictclumpy_all_SDSSancillary.fits')
+clumpy = Table.read('../data/gzh_sdss_strictclumpy_all_trueclumpy.fits')
 
-# add U-R color to the table above
-uband_corr = strictclumpy['PETROMAG_U']-strictclumpy['EXTINCTION_U']
-rband_corr = strictclumpy['PETROMAG_R']-strictclumpy['EXTINCTION_R']
+# Remove duplicates! --------------------------------------------#
+# ----> SEPARATELY from single-epoch and coadd imaging
+single_mask = clumpy['Table']=='sdss_single  '
+single = clumpy[single_mask]
+coadd = clumpy[~single_mask]
 
-urcolor_corr = uband_corr - rband_corr
-urcolor = strictclumpy['PETROMAG_U'] - strictclumpy['PETROMAG_R']
+
+c1_single = SkyCoord(single['RA']*u.degree, single['DEC']*u.degree)
+c2_single = SkyCoord(single['RA']*u.degree, single['DEC']*u.degree)
+idxc1_single, idxc2_single, d2d, d3d = c1_single.search_around_sky(c2_single, 25*u.arcsec)
+
+print "These are the indices of duplicate pairs in single-epoch:"
+print np.where(np.bincount(idxc1_single)>1)
+
+c1_coadd = SkyCoord(coadd['RA']*u.degree, coadd['DEC']*u.degree)
+c2_coadd = SkyCoord(coadd['RA']*u.degree, coadd['DEC']*u.degree)
+idxc1_coadd, idxc2_coadd, d2d, d3d = c1_coadd.search_around_sky(c2_coadd, 25*u.arcsec)
+
+print "These are the indices of duplicate pairs in coadd:"
+print np.where(np.bincount(idxc1_coadd)>1)
+
+pdb.set_trace()
+
+# add U-R color to the table above ------------------------------#
+#uband_corr = strictclumpy['PETROMAG_U']-strictclumpy['EXTINCTION_U']
+#rband_corr = strictclumpy['PETROMAG_R']-strictclumpy['EXTINCTION_R']
+
+#urcolor_corr = uband_corr - rband_corr
+#urcolor = strictclumpy['PETROMAG_U'] - strictclumpy['PETROMAG_R']
 
 pdb.set_trace()
 
