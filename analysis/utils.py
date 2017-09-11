@@ -1,152 +1,66 @@
-
-import string
-import numpy as np
 from astropy.io import fits
-from scipy.interpolate import interp1d
-#import sextutils        # eventually you need to write your own!
-from collections import OrderedDict
-from random import gauss
-from math import pi
-import pdb #"""for doing an IDL-like stop"""
+from astropy.table import Table
+from astropy.wcs import WCS
+import astropy.units as u
+from astropy.coordinates import SkyCoord
+
+import matplotlib.patches as mpatches 
+
+import numpy as np
 
 
-def write_config(cdict, outname):  
-    ''' write config.sex out to file '''
-    f = open(outname,'w')
-    for k,v in cdict.iteritems():
-        f.write('%s\t'%k)
-        v = ','.join(v)
-        f.write('%s\n'%v)
-    f.close()
+def SDSS_FITS_filename(RUN, CAMCOL, FIELD, FILTER):
 
-def find_closest(point, listofpoints):
-    from scipy.spatial import cKDTree
-    
-    # create a KDTree
-    tree = cKDTree(listofpoints)
-    # query the tree to find the set of coordinates closest to that point
-    dist, index = tree.query(point)
-    # return the value of the closest point
-    return listofpoints[index], index
+	return "frame-{0}-{1:06d}-{2}-{3:04d}.fits.bz2".format(FILTER, RUN, CAMCOL, FIELD)
 
 
-def clean_frame(img_name, config): #
-
-    fitsname = os.path.basename(img_name)
-    #basename = string.split(fitsname)
-    catalogname = 'output/c_'+fitsname
-    segmapname = 'output/s_'+fitsname
-    apertname = 'output/a_'+fitsname
-    
-    outname = 'output/'+fitsname
-            
-    # READ IN CONFIG.SEX FILE
-    cfile = sextutils.parseconfig_se(config)
-    
-    # TAILOR CONFIG.SEX TO PRODUCE UNIQUE OUTPUT FOR EACH OBJECT
-    cfile['CATALOG_NAME'] = [catalogname]
-    cfile['CHECKIMAGE_NAME'] = [segmapname, apertname]
-
-    # WRITE THE UPDATED CONFIG.SEX TO FILE
-    write_config(cfile, 't_'+config)
-     
-    # RUN SEXTRACTOR WITH UPDATED CONFIG.SEX
-    cmdline = "sextractor "+img_name+" -c t_"+config
-    rcode = os.system(cmdline)
-    if (rcode):
-        "SExtractor command [%s] failed." % cmdline
-    
-    # READ IN ORIG FITS-FILE AND SEG-MAP
-    img, ihdr = pyfits.getdata(img_name, header=True)
-    seg, shdr = pyfits.getdata(segmapname, header=True)
-
-    # READ IN THE SE CATALOG
-    cat, chdr = pyfits.getdata(catalogname, header=True)
-    coords = zip(cat['X_IMAGE'],cat['Y_IMAGE'])
-    
-    # FIND GALAXY OF INTEREST (it will be in the CENTER OF IMAGE)
-    center = [img.shape[0]/2., img.shape[1]/2.]
-    
-    # find the coordinate closest to the center
-    myCoord = find_closest(center, coords)
-    # find which index myCoord is at in the SE catalog
-    myIndex = np.where(cat['X_IMAGE'] == myCoord[0])
-    
-    # GENERATE VALUES FOR REPLACING OBJECTS WITH BKG NOISE
-    bkg_mean = np.mean(img[seg == 0])
-    bkg_std = np.std(img[seg == 0])
-    
-    cln = img.copy()
-    # CONSIDER EACH OBJECT IN THE CATALOG
-    for num in cat['NUMBER']:
-        # if the object is NOT our galaxy of interest then...
-        if num != cat['NUMBER'][myIndex]:
-            # select the pixels/array elements of object in the segmap
-            # find corresponding pixels in image 
-            # replace them with random bkg noise
-            to_replace = np.where(seg == num)
-            for idx in zip(to_replace[0], to_replace[1]):
-                cln[idx] = gauss(bkg_mean, bkg_std)
-        else:
-            info = cat[myIndex]
-    
-    # SAVE ALL PRODUCTS TO DATA CUBE
-    init0 = pyfits.ImageHDU(data=img, header=ihdr, name='ORG')
-    init1 = pyfits.ImageHDU(data=cln, header=ihdr, name='CLN')
-    init2 = pyfits.ImageHDU(data=seg, header=shdr, name='SEG')
-    init3 = pyfits.TableHDU(data=cat, header=chdr, name='CAT')
-    
-    newthing = pyfits.HDUList()
-    for thing in (init0, init1, init2, init3):
-        newthing.append(thing)
-    newthing.update_extend()
-    newthing.writeto(outname, output_verify='silentfix', clobber=True)
-    
-    # clean up directory
-    os.system("rm output/[c,s,a]_*.fits")
-    
-    #pdb.set_trace()
-
-    # RETURN THE CLEANED IMAGE AND SE OUTPUT FOR OUR GAL
-    return cln, info
+def SDSS_spectra_filename(PLATE, MJD, FIBER):
+	return 'spec-{0:04d}-{1}-{2:04d}.fits'.format(PLATE, MJD, FIBER)
 
 
-def find_indices(x, y):
-    """
-    Find the index of every element of y in x 
-    """
-    # indices that would sort x (length x)
-    index = np.argsort(x)
+def open_fits(filename, directory='../data/SDSSfields'):
 
-    sorted_x = x[index]
-
-    # index of every element of y in sorted x (length y)
-    # can't plug this into either x or y: 
-    # it's too short for x (being length y) and it's x's indices
-    # which are too large for y
-    sorted_index = np.searchsorted(sorted_x, y)
-
-    # this returns the value of "index" at each index, "sorted_index"
-    # so if sorted_index = [273404, 273405, ...]
-    # you'll get the value in "index" at THOSE indices
-    # since "index" is itself a list of indices, you're actually getting
-    # "unsorted" indices in x that correspond to matching values in y
-    # (length y) ; x[yindex] = matching values in y
-    yindex = np.take(index, sorted_index)
-    mask = x[yindex] != y
-
-    result = np.ma.array(yindex, mask=mask)
-
-    return result
-    
+	hdulist = fits.open('{}/{}'.format(directory, filename))
+	return hdulist[0].data, hdulist[0].header
 
 
+def make_spectra_patch(wcs, ra, dec, radius=8, **kwargs):
+
+	position = SkyCoord(ra, dec, unit='deg').to_pixel(wcs)
+	patch = mpatches.Circle(position, radius, fill=False, lw=2, **kwargs)
+
+	return patch
 
 
+def get_clim(img):
+
+	mean = np.mean(img.ravel())
+	std = np.std(img.ravel())
+	low, high = (mean-std), (mean+std)*6
+
+	return (low, high)
 
 
+def open_spectrum(filename, directory):
+    # Generate spectrum filename from SDSS_spectra_filename
+    # Supply directory which should include galaxy DR7 OBJID
+    return fits.open(directory+filename)
+
+def fetch_linelist(spectrum):
+    # According to SDSS data structure, the linelist 
+    # measurements are in the 4th HDU
+    return spectrum[3].data
+
+def fetch_line(linelist, linename):
+    # Return all pertinant information about a given line
+    return linelist[linelist['LINENAME']==linename]
 
 
+def SDSS_linedict():
+	# Line of interest -- these have to be hardcoded because SDSS
+	lines = {'OIII5007': '[O_III] 5007 ',
+			 'OIII4959': '[O_III] 4959 ', 
+			 'Hb': 'H_beta       ', 
+			 'Ha': 'H_alpha      '}
 
-
-
+	return lines
