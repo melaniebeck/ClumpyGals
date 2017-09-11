@@ -1,0 +1,199 @@
+
+%% using aastex version 6
+\documentclass[twocolumn]{aastex6}
+
+%% The other main article choice is a tightly typeset, two-column article
+%% that more closely resembles the final typeset pdf article.
+%%
+%% \documentclass[twocolumn]{aastex6}
+%% 
+%% There are other optional arguments one can envoke to allow other 
+%% actions. 
+%%
+% These are the available options:
+%   manuscript	: onecolumn, doublespace, 12pt fonts
+%   preprint	: onecolumn, single space, 10pt fonts
+%   preprint2	: twocolumn, single space, 10pt fonts
+%   twocolumn	: a two column article. Probably not needed, but here just in case.
+%   onecolumn	: a one column article; default option.
+%   twocolappendix: make 2 column appendix
+%   onecolappendix: make 1 column appendix is the default. 
+%   astrosymb	: Loads Astrosymb font and define \astrocommands. 
+%   tighten	: Makes baselineskip slightly smaller
+%   times	: uses times font instead of the default
+%   linenumbers	: turn on lineno package.
+%   trackchanges : required to see the revision mark up and print output
+%   numberedappendix: Labels appendix sections A, B, ... This is the default.
+%   appendixfloats: Needed. Resets figure and table counters to zero
+
+%% these can be used in any combination, e.g.
+%%
+%% \documentclass[twocolumn,twocolappendix,linenumbers,trackchanges]{aastex6}
+
+%% If you want to create your own macros, you can do so
+%% using \newcommand. Your macros should appear before
+%% the \begin{document} command.
+%%
+\newcommand{\vdag}{(v)^\dagger}
+\newcommand\aastex{AAS\TeX}
+\newcommand\latex{La\TeX}
+\newcommand{\ffeat}{f_{\mathrm{features}}}
+\newcommand{\fclump}{f_{\mathrm{clumpy}}}
+
+%% If you wish, you may supply running head information, although
+%% this information may be modified by the editorial offices.
+%%\shorttitle{\aastex sample article}
+%%\shortauthors{Schwarz et al.}
+
+%% \watermark{text}
+%% \setwatermarkfontsize{dimension}
+
+\begin{document}
+
+%% LaTeX will automatically break titles if they run longer than
+%% one line. However, you may use \\ to force a line break if
+%% you desire.
+
+\title{Something about Clumpy Galaxies}
+
+%% Use \author, \affil, plus the \and command to format author and affiliation 
+%% information.  If done correctly the peer review system will be able to
+%% automatically put the author and affiliation information from the manuscript
+%% and save the corresponding author the trouble of entering it by hand.
+%%
+%% The \affil should be used to document primary affiliations and the
+%% \altaffil should be used for secondary affiliations, titles, or email.
+
+%% Authors with the same affiliation can be grouped in a single
+%% \author and \affil call.
+\author{Melanie Beck\altaffilmark{1,2}}
+\affil{MIfA, UMN}
+
+%% Notice that each of these authors has alternate affiliations, which
+%% are identified by the \altaffilmark after each name.  Specify alternate
+%% affiliation information with \altaffiltext, with one command per each
+%% affiliation.
+
+\altaffiltext{1}{beck@astro.umn.edu}
+
+%% Mark off the abstract in the ``abstract'' environment. 
+\begin{abstract}
+
+Overview of science goes here.
+
+\end{abstract}
+
+\keywords{keyword1 -- keyword2 -- keywordC}
+
+\section{Introduction} \label{sec:intro}
+All the things about clumps. 
+
+\section{Sample Selection \& Data} \label{sec:style}
+What was put into Galaxy Zoo: Hubble? All of Stripe 82 (but what does that mean?)
+Why were they put in? 
+
+From Willett+17: 
+\textit{Single-epoch images from SDSS Stripe 82 were selected using the criteria from Willett et al. 2013, 
+which required limits of \texttt{petroR90\_r}~$ > 3''$ and a magnitude brighter than $m_r < 17.77$. 
+21,522 galaxies in SDSS met these criteria. 
+Co-added images from Stripe 82 were selected from the union of galaxies with co-added magnitudes brighter than 17.77 mag, and the galaxies detected in the stripe-82-single images and matched to a co-add source. This resulted in a total set of 30,339 images. Of the images in the co-added sample, 5144 (17\%) were dimmer than the initial cut of 17.77  mag.}
+
+
+Delicious side-effect: Clumpies! \textit{Chomp.}
+
+We consider the Stripe 82 subjects that were part of the GZH project.  
+The GZH catalog doesn't provide debiased labels for the Stripe 82 subjects, most likely because this has already been done before in GZ2 and because the debiasing is completely different for these low redshift subjects. If we're now going to pick out subjects that are ``featured" -- shouldn't we use the debiased GZ2 values? How much does this change our sample? For that matter, how similar are the smooth and featured vote fractions between GZ2 and GZH? 
+\textbf{Not going to answer this question in this paper.}
+
+
+
+To select a sample of ``clumpy" galaxies from the GZH Stripe 82 sample, we consider only those subjects with  high featured and high clumpy vote fractions; the fraction of volunteers who classified each subject as being featured or clumpy. Specifically, we began with a selection criteria of $\ffeat \ge 0.5$ and  $\fclump \ge 0.5$ and $N_{\mathrm{votes}} \ge 20$, where $N_{votes}$ is the number of volunteers who answerd the question ``Does the galaxy have a mostly clumpy appearance?".  This produced a a sample of 629 galaxies: 273 with single-epoch imaging and 356 with coadd imaging. After visual inspection we find that this is hardly a pure sample of traditional clumpy galaxies instead including many small groups of elliptical galaxies as well as galaxies in various merging states and possessing multiple nuclei. [\textbf{show example image?}] After excluding these and duplicate imaging, we retain 90 coadd-depth clumpy galaxies and 102 single-depth clumpy galaxies. Of these, 36 subjects have both single- and coadd-depth imaging.
+
+ [Note: technically ALL of these galaxies have single- and coadd-depth imaging because they are all in Stripe82. it's only a point of contention here because not all of them have the GZH morphologies assigned to them, for various reasons.]
+
+
+We next select only those subjects which have spectroscopic redshift < 0.06. Beyond this distance, the physical scale as observed with SDSS imaging is no longer similiar to Hubble's at z $\sim3$. The physical scale at z= 0.06 is 1"=1.1kpc. SDSS pixel scale is 0.396"/pixel. --> 0.43 kpc/pixel -->  ~2.3 pixels = 1kpc.   Our final sample contains 105 unique galaxies, each with at least one SDSS spectrum. Half of our sample consist of objects with multiple spectra. We visually inspect these to verify that the SDSS fiber was indeed positioned over a star-forming region rather than the galactic bulge or other structure. 
+
+We obtain SDSS DR12 \textit{ugriz} coadd imaging and spectra within 30" for every galaxy in our sample, discarding those spectra which belong to nearby sources or stars. We find that one ``clumpy" galaxy is, in fact, a juxtoposition of three galaxies at disparate redshifts flagged as clumpy due to the low resolution of SDSS imaging. We exclude this subject(s) from our sample.  Our final list includes 175 spectra. Approximately half of the galaxies in our sample have more than one SDSS spectrum with a handful having three or four spectra.  
+
+
+
+\section{Analysis}
+During visual inspection we discover that several of the galaxies in our sample have very low surface brightness. Additionally, extremely bright clumps and nearby sources make SDSS photometry (and, subsequently, stellar masses) suspect. In this section we describe our analysis of basic galaxy parameters. 
+
+We create postage stamps of each galaxy from each field and all bands of our SDSS coadd imaging. The cutout sizes are determined to be 5 times the petrosian radius as computed by the SDSS pipeline. As mentioned above, however, this pipeline fails to properly account for galaxy extent and thus produces unrealistic measurements of the petrosian radius. We visually inspect all of our cutouts and choose an appropriate postage stamp size that fully encompasses each galaxy. The postage stamp radius is determine from the r-band petrosian radius and this value is used as the stamp size for each band. 
+
+We next process the r-band (maybe g-band cuz that's more blue?) postage stamp with Source Extractor (Bertin and whoever) using parameters designed to detect low surface brightness features. Important parameters are detailed in Table X that doesn't exist yet. Though these parameters adequately identify most of our sample, galaxies that fail are redone individually and SE parameters are tweaked for each particular case. These segmentation maps define the galaxy extent for all future analysis. 
+
+
+
+\subsection{Measuring clump radial distance} \label{subsec:radii}
+
+
+\subsection{Clump H$\alpha$/H$\beta$ ratios [Dust]} \label{subsec:dust}
+
+\subsection{Clumpy H$\alpha$ equivalent widths} \label{subsec:ew}
+
+
+
+
+%% If you wish to include an acknowledgments section in your paper,
+%% separate it off from the body of the text using the \acknowledgments
+%% command.
+
+\section{Discussion / Conclusions}
+our clumps are the best clumps. Everybody says so. 
+
+\acknowledgments
+
+We thank all the people who contributed to Galaxy Zoo. 
+
+%% To help institutions obtain information on the effectiveness of their 
+%% telescopes the AAS Journals has created a group of keywords for telescope 
+%% facilities. 
+
+%% Following the acknowledgments section, use the following syntax and the
+%% \facility{} macro to list the keywords of facilities used in the research 
+%% for the paper.  Each keyword is check against the master list during
+%% copy editing.  Individual instruments can be provided in parentheses,
+%% after the keyword, but they are not verified.
+
+\vspace{5mm}
+\facilities{HST(STIS), Swift(XRT and UVOT), AAVSO, CTIO:1.3m,
+CTIO:1.5m,CXO}
+
+\software{IRAF, cloudy, IDL}
+
+%% Appendix material should be preceded with a single \appendix command.
+%% There should be a \section command for each appendix. Mark appendix
+%% subsections with the same markup you use in the main body of the paper.
+
+%% Each Appendix (indicated with \section) will be lettered A, B, C, etc.
+%% The equation counter will reset when it encounters the \appendix
+%% command and will number appendix equations (A1), (A2), etc.
+
+\appendix
+
+\section{Appendix A}
+
+Appendices can be broken into separate sections just like in the main text.
+The only difference is that each appendix section is indexed by a letter
+(A, B, C, etc.) instead of a number.  Likewise numbered equations have
+the section letter appended.  Here is an equation as an example.
+
+
+
+\begin{thebibliography}{}
+
+\end{thebibliography}
+
+%% This command is needed to show the entire author+affilation list when
+%% the collaboration and author truncation commands are used.  It has to
+%% go at the end of the manuscript.
+\allauthors
+
+%% Include this line if you are using the \added, \replaced, \deleted
+%% commands to see a summary list of all changes at the end of the article.
+\listofchanges
+
+\end{document}
